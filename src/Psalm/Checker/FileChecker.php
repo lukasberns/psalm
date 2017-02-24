@@ -128,6 +128,14 @@ class FileChecker extends SourceChecker implements StatementsSource
         if (!isset(self::$storage[$file_path])) {
             self::$storage[$file_path] = new FileStorage();
         }
+		
+		$fileContents = file_get_contents($file_path);
+		$appUsesMatches = preg_match_all('/\bApp::uses\([^\$\)]+\)\s*;/', $fileContents, $appUses);
+		unset($fileContents); // don't let it appear in debug output
+		if ($appUsesMatches) {
+			// print(implode("\n", $appUses[0])."\n");
+			eval(implode(' ', $appUses[0]));
+		}
 
         if ($preloaded_statements) {
             $this->preloaded_statements = $preloaded_statements;
